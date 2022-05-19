@@ -1,5 +1,5 @@
 export GOBIN=$(PWD)/bin
-export PROTOBUF_ROOT=$(PWD)/_vendor/protobuf-3.20.0
+export PROTOBUF_ROOT=$(PWD)/_vendor/protobuf-3.20.1
 
 .PHONY: install test gen-conformance gen-include genall
 
@@ -31,6 +31,7 @@ gen-include:
 		-I$(PROTOBUF_ROOT)/src \
 		github.com/davidflanagan/vtprotobuf/vtproto/ext.proto
 	mv include/github.com/davidflanagan/vtprotobuf/vtproto/*.go ./vtproto
+	cp include/github.com/davidflanagan/vtprotobuf/vtproto/ext.proto ./vtproto
 
 gen-testproto:
 	for name in "pool/pool.proto pool/pool_with_slice_reuse.proto proto3opt/opt.proto proto2/scalars.proto"; do \
