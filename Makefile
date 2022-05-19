@@ -29,8 +29,8 @@ gen-include:
 		--proto_path=include \
 		--go_out=include --plugin protoc-gen-go="${GOBIN}/protoc-gen-go" \
 		-I$(PROTOBUF_ROOT)/src \
-		github.com/planetscale/vtprotobuf/vtproto/ext.proto
-	mv include/github.com/planetscale/vtprotobuf/vtproto/*.go ./vtproto
+		github.com/davidflanagan/vtprotobuf/vtproto/ext.proto
+	mv include/github.com/davidflanagan/vtprotobuf/vtproto/*.go ./vtproto
 
 gen-testproto:
 	for name in "pool/pool.proto pool/pool_with_slice_reuse.proto proto3opt/opt.proto proto2/scalars.proto"; do \

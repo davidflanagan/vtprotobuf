@@ -7,7 +7,7 @@ package generator
 import (
 	"fmt"
 
-	"github.com/planetscale/vtprotobuf/vtproto"
+	"github.com/davidflanagan/vtprotobuf/vtproto"
 
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
