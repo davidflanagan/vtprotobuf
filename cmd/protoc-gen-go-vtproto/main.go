@@ -38,22 +38,38 @@ func (o ObjectSet) Set(s string) error {
 }
 
 func main() {
-	var features string
-	poolable := make(ObjectSet)
+	var (
+		features                string
+		poolable                = make(ObjectSet)
+		internPackageImportPath = "github.com/davidflanagan/vtprotobuf/vtproto"
+		internFunctionName      = "Intern"
+	)
 
 	var f flag.FlagSet
 	f.Var(poolable, "pool", "use memory pooling for this object")
 	f.StringVar(&features, "features", "all", "list of features to generate (separated by '+')")
+	f.StringVar(&internPackageImportPath, "internPkg", internPackageImportPath, "the package to import for string interning")
+	f.StringVar(&internFunctionName, "internFunc", internFunctionName, "the name of the string interning function")
 
 	protogen.Options{ParamFunc: f.Set}.Run(func(plugin *protogen.Plugin) error {
-		return generateAllFiles(plugin, strings.Split(features, "+"), poolable)
+		return generateAllFiles(plugin, strings.Split(features, "+"), poolable, internPackageImportPath, internFunctionName)
 	})
 }
 
 var SupportedFeatures = uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
 
-func generateAllFiles(plugin *protogen.Plugin, featureNames []string, poolable ObjectSet) error {
-	ext := &generator.Extensions{Poolable: poolable}
+func generateAllFiles(
+	plugin *protogen.Plugin,
+	featureNames []string,
+	poolable ObjectSet,
+	internPackageImportPath string,
+	internFunctionName string,
+) error {
+	ext := &generator.Extensions{
+		Poolable:                poolable,
+		InternPackageImportPath: internPackageImportPath,
+		InternFunctionName:      internFunctionName,
+	}
 	gen, err := generator.NewGenerator(plugin.Files, featureNames, ext)
 	if err != nil {
 		return err

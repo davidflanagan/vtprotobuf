@@ -17,7 +17,9 @@ type featureHelpers struct {
 }
 
 type Extensions struct {
-	Poolable map[protogen.GoIdent]bool
+	Poolable                map[protogen.GoIdent]bool
+	InternPackageImportPath string
+	InternFunctionName      string
 }
 
 type Generator struct {
