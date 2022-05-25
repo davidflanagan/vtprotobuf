@@ -6,6 +6,7 @@ package generator
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/davidflanagan/vtprotobuf/vtproto"
 
@@ -34,6 +35,18 @@ func (b *GeneratedFile) ShouldPool(message *protogen.Message) bool {
 	ext := proto.GetExtension(message.Desc.Options(), vtproto.E_Mempool)
 	if mempool, ok := ext.(bool); ok {
 		return mempool
+	}
+	return false
+}
+
+func (b *GeneratedFile) ShouldIntern(field *protogen.Field) bool {
+	typ, _ := b.FieldGoType(field)
+	if !strings.HasSuffix(typ, "string") { // We only intern strings
+		return false
+	}
+	ext := proto.GetExtension(field.Desc.Options(), vtproto.E_Intern)
+	if intern, ok := ext.(bool); ok {
+		return intern
 	}
 	return false
 }

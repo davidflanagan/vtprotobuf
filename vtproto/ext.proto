@@ -10,3 +10,7 @@ option go_package = "github.com/davidflanagan/vtprotobuf/vtproto";
 extend google.protobuf.MessageOptions {
   optional bool mempool = 64101;
 }
+
+extend google.protobuf.FieldOptions {
+  optional bool intern = 64101;
+}

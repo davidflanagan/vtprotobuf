@@ -338,6 +338,14 @@ func (p *unmarshal) fieldItem(field *protogen.Field, fieldname string, message *
 	oneof := field.Oneof != nil && !field.Oneof.Desc.IsSynthetic()
 	nullable := field.Oneof != nil && field.Oneof.Desc.IsSynthetic()
 
+	// When converting a byte slice to a string we normally use the typ value "string"
+	// as a conversion function. But when interning strings we want to use the intern function
+	// that was passed as an argument to the vtprotobuf plugin
+	converter := typ
+	if p.ShouldIntern(field) {
+		converter = p.Ident(p.Ext.InternPackageImportPath, p.Ext.InternFunctionName)
+	}
+
 	switch field.Desc.Kind() {
 	case protoreflect.DoubleKind:
 		p.P(`var v uint64`)
@@ -481,13 +489,13 @@ func (p *unmarshal) fieldItem(field *protogen.Field, fieldname string, message *
 		p.P(`return `, p.Ident("io", `ErrUnexpectedEOF`))
 		p.P(`}`)
 		if oneof {
-			p.P(`m.`, fieldname, ` = &`, field.GoIdent, `{`, typ, `(dAtA[iNdEx:postIndex])}`)
+			p.P(`m.`, fieldname, ` = &`, field.GoIdent, `{`, converter, `(dAtA[iNdEx:postIndex])}`)
 		} else if repeated {
-			p.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, typ, `(dAtA[iNdEx:postIndex]))`)
+			p.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, converter, `(dAtA[iNdEx:postIndex]))`)
 		} else if proto3 && !nullable {
-			p.P(`m.`, fieldname, ` = `, typ, `(dAtA[iNdEx:postIndex])`)
+			p.P(`m.`, fieldname, ` = `, converter, `(dAtA[iNdEx:postIndex])`)
 		} else {
-			p.P(`s := `, typ, `(dAtA[iNdEx:postIndex])`)
+			p.P(`s := `, converter, `(dAtA[iNdEx:postIndex])`)
 			p.P(`m.`, fieldname, ` = &s`)
 		}
 		p.P(`iNdEx = postIndex`)
